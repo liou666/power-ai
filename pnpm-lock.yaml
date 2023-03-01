@@ -4,6 +4,7 @@ specifiers:
   '@astrojs/solid-js': ^2.0.2
   '@astrojs/tailwind': ^3.0.1
   astro: ^2.0.4
+  eventsource-parser: ^0.1.0
   solid-js: ^1.4.3
   tailwindcss: ^3.0.24
 
@@ -11,6 +12,7 @@ dependencies:
   '@astrojs/solid-js': 2.0.2_solid-js@1.6.11
   '@astrojs/tailwind': 3.0.1_enl5tymeuxlslzmmdrwlr7zkvy
   astro: 2.0.15
+  eventsource-parser: 0.1.0
   solid-js: 1.6.11
   tailwindcss: 3.2.7
 
@@ -1333,6 +1335,11 @@ packages:
   /events/3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
+    dev: false
+
+  /eventsource-parser/0.1.0:
+    resolution: {integrity: sha512-M9QjFtEIkwytUarnx113HGmgtk52LSn3jNAtnWKi3V+b9rqSfQeVdLsaD5AG/O4IrGQwmAAHBIsqbmURPTd2rA==}
+    engines: {node: '>=14.18'}
     dev: false
 
   /execa/6.1.0:
