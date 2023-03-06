@@ -1,19 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro'
-const value = '海边吹过一阵风'
 ---
 
 <Layout title="Welcome to Astro.">
   <main>
     <div class="mt-24 ml-8">
       <h1>Power AI</h1>
-      <input value={value} type="text" />
+      <input type="text" />
       <button>go</button>
       <p>This is answer of AI :</p>
-      <p class="max-[100vw] flex-wrap" id="result">
-				...
-			</p>
-      <img id="img" src="" alt="" />
+      <p class="max-[100vw] flex-wrap" id="result">...</p>
+      <img id="img" src="" alt="ai" />
     </div>
   </main>
 </Layout>
@@ -23,19 +20,23 @@ const value = '海边吹过一阵风'
   const input = document.querySelector('input')!
   const result = document.querySelector('#result')!
   const img = document.querySelector('#img')!
-  const decoder = new TextDecoder()
 
-  let store = ''
-	// const ress = await fetch('/api/genimg?text=smart boy')
-  //   const r = await ress.json()
-  //   img.setAttribute('src', r.data[0].url)
+  let loading = false
+
+  const decoder = new TextDecoder()
+  const reset = () => {
+    result.innerHTML = '...'
+    img.setAttribute('src', '')
+  }
+
   button.addEventListener('click', async () => {
+    loading = true
+    button.disabled = true
+    reset()
     const value = input.value
-    store += value
-    console.log('click')
     const res = await fetch('/api/gentext', {
       method: 'POST',
-      body: JSON.stringify({ text: store }),
+      body: JSON.stringify({ messages: [{ role: 'user', content: value }] }),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -46,7 +47,13 @@ const value = '海边吹过一阵风'
       const { value, done: doneReading } = await reader.read()
       done = doneReading
       const chunkValue = decoder.decode(value)
-			result.innerHTML += chunkValue
+      result.innerHTML += chunkValue
     }
+
+    const imgRes = await fetch(`/api/genimg?prompt=${value}`)
+    const r = await imgRes.json()
+    img.setAttribute('src', r.data[0].url)
+    loading = false
+    button.disabled = false
   })
 </script>
