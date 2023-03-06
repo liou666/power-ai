@@ -1,20 +1,21 @@
 import type { APIRoute } from 'astro'
-import { getTextStream } from '@/utils'
+import { generateTurboPayload, parseOpenAIStream, TURBO_URL } from '@/utils'
+import { fetch, ProxyAgent } from 'undici'
 
-const genPrompt = (prompt: string) => {
-  return `以下面文字开头接着续写一篇小说：
-  ${prompt}
-  `
-}
-
+const apiKey = import.meta.env.OPENAI_API_KEY
+const https_proxy = import.meta.env.HTTPS_PROXY
 export const post: APIRoute = async (context) => {
-  const body = await context.request.json()
-  const prompt = body.input
-  const p = {
-    prompt: genPrompt(prompt),
-    temperature: 0.7,
-    max_tokens: 500,
+  const { messages } = await context.request.json()
+  if (!messages) {
+    return new Response('[warn] No input text!')
   }
-  const stream = await getTextStream(p)
-  return new Response(stream)
+
+  const initOptions = generateTurboPayload(apiKey, messages)
+  if (https_proxy) {
+    initOptions['dispatcher'] = new ProxyAgent(https_proxy)
+  }
+  // @ts-ignore
+  const response = (await fetch(TURBO_URL, initOptions)) as Response
+
+  return new Response(parseOpenAIStream(response))
 }
