@@ -1,4 +1,7 @@
 {
-  "extends": "@liou666"
+  "extends": "@liou666",
+  "rules": {
+    "react/no-unknown-property": "off"
+  }
 }
 
