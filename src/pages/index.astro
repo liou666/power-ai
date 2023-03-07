@@ -1,59 +1,16 @@
 ---
-import Layout from '../layouts/Layout.astro'
+import Layout from '@/layouts/Layout.astro'
+import Chat from '@/components/Chat'
+import Header from '@/components/Header.astro'
+import Footer from '@/components/Footer.astro'
 ---
 
-<Layout title="Welcome to Astro.">
-  <main>
-    <div class="mt-24 ml-8">
-      <h1>Power AI</h1>
-      <input type="text" />
-      <button>go</button>
-      <p>This is answer of AI :</p>
-      <p class="max-[100vw] flex-wrap" id="result">...</p>
-      <img id="img" src="" alt="ai" />
-    </div>
+<Layout title="Power AI">
+  <main class="flex flex-col mx-auto w-[30ch] sm:w-[50ch] md:w-[65ch] lg:w-[80ch] h-[90vh]">
+    <Header />
+    <section class="flex-1 flex flex-col">
+      <Chat client:load />
+    </section>
+    <Footer />
   </main>
 </Layout>
-
-<script>
-  const button = document.querySelector('button')!
-  const input = document.querySelector('input')!
-  const result = document.querySelector('#result')!
-  const img = document.querySelector('#img')!
-
-  let loading = false
-
-  const decoder = new TextDecoder()
-  const reset = () => {
-    result.innerHTML = '...'
-    img.setAttribute('src', '')
-  }
-
-  button.addEventListener('click', async () => {
-    loading = true
-    button.disabled = true
-    reset()
-    const value = input.value
-    const res = await fetch('/api/gentext', {
-      method: 'POST',
-      body: JSON.stringify({ messages: [{"role": "system", "content": "You are a helpful assistant."},{ role: 'user', content: value }] }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    let done = false
-    const reader = res.body!.getReader()
-    while (!done) {
-      const { value, done: doneReading } = await reader.read()
-      done = doneReading
-      const chunkValue = decoder.decode(value)
-      result.innerHTML += chunkValue
-    }
-
-    const imgRes = await fetch(`/api/genimg?prompt=${value}`)
-    const r = await imgRes.json()
-    img.setAttribute('src', r.data[0].url)
-    loading = false
-    button.disabled = false
-  })
-</script>
