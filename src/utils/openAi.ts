@@ -1,8 +1,11 @@
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
 import type { ChatMessage } from '@/types'
 
-export const TURBO_URL = 'https://api.openai.com/v1/chat/completions'
-export const IMAGE_URL = 'https://api.openai.com/v1/images/generations'
+const defaultProxy = 'https://api.openai.com/'
+
+export const getTurboUrl = (proxy = defaultProxy) => `${proxy}/v1/chat/completions`
+export const getImageUrl = (proxy = defaultProxy) => `${proxy}/v1/images/generations`
+export const getChatUrl = (proxy = defaultProxy) => `${proxy}/v1/completions`
 
 // gpt-3.5-turbo
 export const generateTurboPayload = (apiKey: string, messages: ChatMessage[]): RequestInit => ({
@@ -14,6 +17,21 @@ export const generateTurboPayload = (apiKey: string, messages: ChatMessage[]): R
   body: JSON.stringify({
     model: 'gpt-3.5-turbo',
     messages,
+    temperature: 0.6,
+    stream: true,
+  }),
+})
+
+// common chat text-davinci-003
+export const generateChatPayload = (apiKey: string, prompt: string): RequestInit => ({
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${apiKey}`,
+  },
+  method: 'POST',
+  body: JSON.stringify({
+    model: 'text-davinci-003',
+    prompt,
     temperature: 0.6,
     stream: true,
   }),
